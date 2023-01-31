@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block body  %}
+
+  <head>
+    <title>Vehiculos</title>
+    <div id="line_top_x"></div>
+        <ul class="nav nav-tabs">
+          {% if current_user.username in users_list %}
+            {% block content %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard.energy_monitor') }}">Gestión de energía</a>
+                </li>
+            {% endblock content %}
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('dashboard.show_vehicle_map') }}" aria-selected="true">Mapa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_entries') }}" aria-selected="false" > Dashboard por vehículo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_tables') }}" aria-selected="false">Tablas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_boat_routes') }}" aria-selected="false">Boat routes</a>
+          </li>
+        </ul>
+     </div>
+    <ul class="nav nav-tabs">
+          <li class="nav-item">
+          <a class="nav-link active" id="v-pills-profile-tab"  href="{{ url_for('dashboard.show_vehicle_map') }}" > Operación </a>
+          </li>
+    </ul>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    {#  Function to draw user vehicles table component  #}
+    <script src="../static/js/Components/user_vehicles_table.js"></script>
+
+    <script>
+      google.charts.load('current', {'packages':['table']});
+      google.charts.setOnLoadCallback(drawTable);
+      const data_vehicles = {{ vehicles|safe }};
+    </script>
+
+      <h4  style="margin: 20px;"> Seleccione un vehículo para ver detalle </h4>
+    <div id="table_div" style="width: 96%; margin: 20px;"></div>
+
+    <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overflow-y: scroll;
+    }
+
+    #deck-container {
+      width: 96vw;
+      height: 80vh;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="deck-container">
+    </div>
+  </body>
+  <script>
+
+    var json_operation = JSON.parse('{{ json_operation | safe}}');
+    var json_stations = JSON.parse('{{ json_stations | safe}}');
+
+    const jsonInput = {"initialViewState": {"bearing": -27.36, "latitude": 6.17184, "longitude": -75.56359, "maxZoom": 17, "minZoom": 3, "pitch": 40.5, "zoom": 13},
+      "layers": [
+          {"@@type": "ScatterplotLayer", "data":json_stations, "filled": true, "getFillColor": [255, 140, 0], "getLineColor": [0, 0, 0], "getPosition": "@@=[longitude, latitude]", "id": "695882c-7d5e-4f89-9e8a-049b84822d70", "lineWidthMinPixels": 1, "opacity": 0.8, "pickable": true, "radiusMaxPixels": 5, "radiusMinPixels": 5, "radiusScale": 4, "stroked": true},
+          {"@@type": "ScatterplotLayer", "data":json_operation, "filled": true, "getFillColor": [0, 0, 255], "getLineColor": [0, 0, 0], "getPosition": "@@=[longitude, latitude]", "id": "2695882c-7d5e-4g89-9e8a-049b84822d70", "lineWidthMinPixels": 1, "opacity": 0.9, "pickable": true, "radiusMaxPixels": 8, "radiusMinPixels": 8, "radiusScale": 6, "stroked": false},
+      ],
+        "mapStyle": "mapbox://styles/mapbox/cjaudgl840gn32rnrepcb9b9g", "views": [{"@@type": "MapView", "controller": true}]};
+    const MAPBOX_API_KEY = 'pk.eyJ1Ijoic2FudGlhZ28xNzFjYyIsImEiOiJja2NjZTkzOTkwM3ZxMndxa296YTVseGNkIn0.EFcvvL83cLQZYsqSgLVa6A';
+    const tooltip = {
+        'html':
+            '<b>{name}</b>, Hora: <b>{timestamp}</b> ' +
+            'Cerca a estacion {closest_station}',
+        'style': {'background': 'grey', 'color': 'white', 'font-family': '"Helvetica Neue", Arial', 'z-index': '10000'}};
+    const customLibraries = null;
+
+    const deck = createDeck({
+      mapboxApiKey: MAPBOX_API_KEY,
+      container: document.getElementById('deck-container'),
+      jsonInput,
+      tooltip,
+      customLibraries
+    });
+  </script>
+  <div class="container">
+  </div>
+
+{% endblock %}

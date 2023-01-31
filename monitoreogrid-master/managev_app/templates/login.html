@@ -1,0 +1,36 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+<title> Login </title>
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %} 
+</div>
+<div class="myforms" >
+  <form class="container" action="{{ url_for('dashboard.login') }}" method=post novalidate>
+      <div class="text-center mb-4">
+        <img class="mb-4" src="/static/tracking-icon.png" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Plataforma de vehículos electricos</h1>
+        <p>Nuevo usuario?.  <a href="{{ url_for('dashboard.register') }}">Registrate!</a></p>
+      </div>
+        {{ form.hidden_tag() }}
+              <d1>
+                {{ wtf.form_field(form.username, class='form-control', placeholder='Ingresa tu usuario...') }}
+              </d1>
+              <d1>
+                {{ wtf.form_field(form.password, class='form-control', placeholder='Ingresa tu contraseña...') }}
+             </d1>
+      <div class="form-label-group">
+        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+      </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+  <p class="mt-5 mb-3 text-muted text-center">&copy;GRID 2020</p>
+  </form>
+</div>
+{% endblock %}
+

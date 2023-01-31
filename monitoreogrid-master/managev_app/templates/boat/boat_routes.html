@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+
+    <title>Boat routes</title>
+    <div id="line_top_x"></div>
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_vehicle_map') }}" aria-selected="false">Mapa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_entries') }}" aria-selected="false" >Dashboard por vehículo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_tables') }}" aria-selected="false">Tablas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('dashboard.show_boat_routes') }}" aria-selected="true">Boat routes</a>
+          </li>
+        </ul>
+    </div>
+
+    <div class="container-fluid pt-3">
+        <h2>Rutas</h2>
+        <form method="POST">
+          {{ form.hidden_tag() }}
+          <h3>Ingresar coordenadas iniciales</h3>
+          <div class="row">
+            <div class="col-3">
+                {{ wtf.form_field(form.lonIni, class='form-control', placeholder='Ingresa la longitud más al Norte...') }}
+            </div>
+            <div class="col-3">
+                {{ wtf.form_field(form.latIni, class='form-control', placeholder='Ingresa la latitud más al Oeste...') }}
+            </div>
+          </div>
+          <br>
+          <h3>Ingresar coordenadas finales</h3>
+          <div class="row">
+            <div class="col-3">
+              {{ wtf.form_field(form.lonFin, class='form-control', placeholder='Ingresa la longitud más al Sur...') }}
+            </div>
+            <div class="col-3">
+              {{ wtf.form_field(form.latFin, class='form-control', placeholder='Ingresa la latitud más al Este...') }}
+            </div>
+          </div>
+          <br>
+          <button type="submit" class="btn btn-primary" value="VALUE1" name="action1">Submit data</button>
+        </form>
+    </div>
+
+{% endblock %}

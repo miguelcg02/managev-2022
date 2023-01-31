@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+    <script type="text/javascript">
+          
+      function FindPosition(oElement)
+      {
+        if(typeof( oElement.offsetParent ) != "undefined")
+        {
+          for(var posX = 0, posY = 0; oElement; oElement = oElement.offsetParent)
+          {
+            posX += oElement.offsetLeft;
+            posY += oElement.offsetTop;
+          }
+            console.log("entro por 1");
+            return [ posX, posY ];
+          }
+          else
+          {
+            console.log("entro por 2");
+            return [ oElement.x, oElement.y ];
+          }
+      }
+      
+      function GetCoordinates(e)
+      {
+
+        console.log("entro")
+        var PosX = 0;
+        var PosY = 0;
+        var ImgPos;
+        ImgPos = FindPosition(myImg);
+        if (!e) var e = window.event;
+        if (e.pageX || e.pageY)
+        {
+          PosX = e.pageX;
+          PosY = e.pageY;
+        }
+        else if (e.clientX || e.clientY)
+          {
+            PosX = e.clientX + document.body.scrollLeft
+              + document.documentElement.scrollLeft;
+            PosY = e.clientY + document.body.scrollTop
+              + document.documentElement.scrollTop;
+          }
+        PosX = PosX - ImgPos[0]; //Este es el pixel seleccionado de la imagen en el eje X 
+        PosY = PosY - ImgPos[1]; //Este es el pixel seleccionado de la imagen en el eje Y
+
+        console.log(PosX)
+        console.log(PosY)
+
+        let north = "{{north}}"
+        let south = "{{south}}"
+        let west = "{{west}}"
+        let east = "{{east}}"
+        let height = "{{height}}"
+        let width = "{{width}}"
+
+        let increment = (((north-south)/height)+(east-west)/width)/2
+        
+        let valueLat = (parseFloat(west)+(PosX*increment))
+        let valueLon = (parseFloat(north)-(PosY*increment))
+
+        document.getElementById("x").value = valueLon;
+        document.getElementById("y").value = valueLat;
+      }
+    </script>
+
+    <title>Boat routes</title>
+
+    <div id="line_top_x"></div>
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_vehicle_map') }}" aria-selected="false">Mapa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_entries') }}" aria-selected="false" >Dashboard por vehículo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_tables') }}" aria-selected="false">Tablas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('dashboard.show_boat_routes') }}" aria-selected="true">Boat routes</a>
+          </li>
+        </ul>
+    </div>
+
+    <div class="container-fluid pt-3">
+        <h2>Rutas</h2>
+        <h3>Ingresar coordenadas iniciales</h3>
+        <form method="POST">
+          {{ formDis.hidden_tag() }}
+          <div class="row">
+            <div class="col-3">
+                {{ wtf.form_field(formDis.distlonIni, class='form-control', id='x', placeholder='Ingresa la longitud inicial...') }}
+            </div>
+            <div class="col-3">
+                {{ wtf.form_field(formDis.distlatIni, class='form-control', id='y',placeholder='Ingresa la latitud inicial...') }}
+            </div>
+          </div>
+          <br>
+          <h3>Ingresar coordenadas finales</h3>
+          <div class="row">
+            <div class="col-3">
+              {{ wtf.form_field(formDis.distancia, class='form-control', placeholder='Distancia en metros...') }}
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" value="VALUE6" name="action6">Ingresar datos</button>
+          <a class="btn btn-primary" href="{{ url_for('dashboard.show_boat_routes') }}">Volver</a>
+          <br>
+          <img src="{{imagen}}" alt="CuerpoAcuoso" id="myImgId" />
+        </form>
+    </div>
+
+    <script type="text/javascript">
+      var myImg = document.getElementById("myImgId");
+      myImg.onmousedown = GetCoordinates;
+    </script>
+{% endblock %}

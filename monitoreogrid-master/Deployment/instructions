@@ -1,0 +1,12 @@
+https://www.digitalocean.com/community/tutorials/como-preparar-aplicaciones-de-flask-con-gunicorn-y-nginx-en-ubuntu-18-04-es
+
+Serie de pasos para el despliegue:
+
+sudo nano /etc/systemd/system/monitoreo.service
+sudo systemctl start monitoreo
+sudo systemctl enable monitoreo
+sudo nano /etc/nginx/sites-available/monitoreo
+sudo ln -s /etc/nginx/sites-available/monitoreo /etc/nginx/sites-enabled
+sudo rm -r /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl restart nginx

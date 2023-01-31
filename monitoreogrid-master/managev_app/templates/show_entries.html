@@ -1,0 +1,420 @@
+{% extends "layout.html" %}
+{% block body  %}
+<div>
+
+    <title>Dasboard</title>
+    <div id="line_top_x"></div>
+        <ul class="nav nav-tabs">
+            {% if current_user.username in users_list %}
+                {% block content %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard.energy_monitor') }}">Gestión de energía</a>
+                    </li>
+                {% endblock content %}
+            {% endif %}
+          
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_vehicle_map') }}" aria-selected="false">Mapa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('dashboard.show_entries') }}" aria-selected="true" >Dashboard por vehículo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_tables') }}" aria-selected="false">Tablas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_boat_routes') }}" aria-selected="false">Boat routes</a>
+          </li>
+
+        </ul>
+    </div>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.18/c3.css" rel="stylesheet">
+
+    <!-- Load d3.js and c3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.18/c3.min.js"></script>
+    <!-- <script type="text/javascript" src="http://d3js.org/d3.v5.min.js"></script> -->
+
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    {#  Function to draw vehicle calendar component  #}
+    <script src="../static/js/Components/vehicle_calendar_operation.js"></script>
+    <script>
+      google.charts.load("current", {packages:["calendar"]});
+      google.charts.setOnLoadCallback(drawChart);
+      let data_cal = {{ calendar|safe }};
+    </script>
+
+    {#  Function to draw user vehicles table component  #}
+    <script src="../static/js/Components/user_vehicles_table.js"></script>
+    <script>
+      google.charts.load('current', {'packages':['table']});
+      google.charts.setOnLoadCallback(drawTable);
+      const data_vehicles = {{ vehicles|safe }};
+    </script>
+
+    <div id="table_div" style="width: 96%; margin: 20px;"></div>
+
+    <div class="variables">
+        <form role="form" class="form-inline" id="Mainform" action="{{ url_for('dashboard.show_entries') }}" method=post>
+
+            <div id="calendar_basic" style="width: 90%; height: 190px; margin: 20px; overflow-y:auto;"></div>
+
+            <div class="col-auto" style="margin: 20px;">
+                <label class="label label-default" for="exampleFormControlSelect2"> Visualizar </label>
+                <select class="form-control" id="exampleFormControlSelect2" name = graph_var_y onchange="this.form.submit();">
+                    <option value="{{session.graph_var_y}}"> {{session.graph_var_y_pretty}}</option>
+                    <option value="elevation">Altitud (google api)</option>
+                    <option value="speed">Velocidad instantánea (Km/h)</option>
+                    <option value="capacity">Capacidad (kWh)</option>
+                    <option value="power_kw">Potencia eléctrica (Kw)</option>
+                    <option value="soc">Estado de Carga (SoC)</option>
+                    <option value="soh">SOH</option>
+                    <option value="batt_temp">Temperatura de batería (°C)</option>
+                    <option value="assist_level">Nivel de asistencia</option>
+                    <option value="voltage">Voltage (V)</option>
+                    <option value="current">Corriente (A)</option>
+                </select>
+            </div>
+
+            <div class=' col-auto'>
+                <label class="label label-default" for="date"> Fecha </label>
+                <div class="form-group" id = 'date'>
+                    <div class='input-group date' id='datetimepicker1'>
+                        <input type='text' onchange='this.form.submit();' id = 'd1_input' class="form-control" name = 'd1'  />
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                document.getElementById('d1_input').defaultValue = '{{ session.form_d1 }}'
+                $(function() {
+                   $('#datetimepicker1').datetimepicker({
+                         format: 'DD/MM/YYYY'
+                   });
+                });
+            </script>
+
+            <div class=' col-auto'>
+                <label class="label label-default" for="hora1"> Desde </label>
+                <div class="form-group" id="hora1">
+                    <div class='input-group date' id='datetimepicker3'>
+                        <input type='text' id = 'h1_input' class="form-control" name = 'h1'/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+
+                document.getElementById('h1_input').defaultValue = '{{ session.form_h1 }}'
+                $(function () {
+                    $('#datetimepicker3').datetimepicker({
+                        format: 'LT'
+                    });
+                });
+            </script>
+
+            <div class=' col-auto'>
+                <label class="label label-default" for="hora2"> Hasta </label>
+                <div class="form-group" id="hora2">
+                    <div class='input-group date' id='datetimepicker4'>
+                        <input type='text' onchange="this.form.submit();" id = 'h2_input' class="form-control" name = 'h2'/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.getElementById('h2_input').defaultValue = '{{ session.form_h2 }}';
+                $(function () {
+                    $('#datetimepicker4').datetimepicker({
+                        format: 'LT'
+                    });
+                });
+            </script>
+            <div class="col-auto">
+                <button class="btn btn-dark" type="submit">Ver</button>
+            </div>
+
+            <div style="width: 100%">
+                <div id = "bargraph" style="width:70%;float: left">
+                    <script>
+                        var graphs = {{plot | safe}};
+
+                        smoothTrace1 = {
+                           'type': 'scatter',
+                           'mode': 'line+markers',
+                           'x': graphs[0]['x'],
+                           'y': graphs[0]['y'],
+                           //fill: 'tozeroy',
+                           //'line': {'shape': 'spline', 'smoothing': 0.45}
+                       }
+
+
+                        data1=[smoothTrace1]
+                        Plotly.newPlot('bargraph',data1, {});
+                    </script>
+                </div>
+
+                <div id = 'boxDiv2' style="width:30%;float: right;">
+                    <script>
+                        var name1 = "{{session.graph_var_y_pretty}}";
+                        var y0 = {{box | safe}};
+                        var trace1 = {
+                          y: y0,
+                          type: 'box',
+                          color: 'blue',
+                          name: "{{session.graph_var_y_pretty}}",
+                          boxmean: 'sd'
+                        };
+
+                        var data = [trace1];
+                        Plotly.newPlot('boxDiv2', data);
+                    </script>
+                </div>
+            </div>
+            <div class="col-auto" style="margin: 20px;">
+                <label class="label label-default" for="FormControlSelect2"> Visualizar </label>
+                <select class="form-control" id="FormControlSelect2" name = graph_var_y2 onchange="this.form.submit();">
+                    <option value="{{session.graph_var_y2}}"> {{session.graph_var_y2_pretty}}</option>
+                    <option value="elevation">Altitud (google api)</option>
+                    <option value="speed">Velocidad instantánea (Km/h)</option>
+                    <option value="capacity">Capacidad (kWh)</option>
+                    <option value="power_kw">Potencia eléctrica (Kw)</option>
+                    <option value="soc">Estado de Carga (SoC)</option>
+                    <option value="soh">SOH</option>
+                    <option value="batt_temp">Temperatura de batería (°C)</option>
+                    <option value="assist_level">Nivel de asistencia</option>
+                    <option value="voltage">Voltage (V)</option>
+                    <option value="current">Corriente (A)</option>
+                </select>
+            </div>
+
+            <div class='col-auto'>
+                <label class="label label-default" for="date"> Fecha </label>
+                <div class="form-group" id = 'date2'>
+                    <div class='input-group date' id='datetimepicker5'>
+                        <input type='text' onchange="this.form.submit();" id = 'd2_input' class="form-control" name = 'd2' />
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                document.getElementById('d2_input').defaultValue = '{{ session.form_d2 }}'
+                $(function() {
+                   $('#datetimepicker5').datetimepicker({
+                         format: 'DD/MM/YYYY'
+                   });
+                });
+            </script>
+            <div class='col-auto'>
+                <label class="label label-default" for="hora3"> Desde </label>
+                <div class="form-group" id="hora3">
+                    <div class='input-group date' id='datetimepicker6'>
+                        <input type='text' id = 'h3_input' class="form-control" name = 'h3'/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                document.getElementById('h3_input').defaultValue = '{{ session.form_h3 }}'
+                $(function () {
+                    $('#datetimepicker6').datetimepicker({
+                        format: 'LT'
+                    });
+                });
+            </script>
+            <div class=' col-auto'>
+                <label class="label label-default" for="hora4"> Hasta </label>
+                <div class="form-group" id="hora4">
+                    <div class='input-group date' id='datetimepicker7'>
+                        <input type='text' onchange="this.form.submit();" id = 'h4_input' class="form-control" name = 'h4'/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.getElementById('h4_input').defaultValue = '{{ session.form_h4 }}';
+                $(function () {
+                    $('#datetimepicker7').datetimepicker({
+                        format: 'LT'
+                    });
+                });
+            </script>
+        </form>
+    </div>
+    <div>
+        <div style="width:100%;height:450px">
+            <div class="chart" id="bargraph2" style="width:70%;float: left">
+                <script>
+                    var graphs2 = {{plot2 | safe}};
+
+                    var trace1 = {
+                      x: graphs2[0]['x'],
+                      y: graphs2[0]['y'],
+                      fill: 'tozeroy',
+                      type: 'scatter',
+                      shape: "spline"
+                    };
+
+                    smoothTrace = {
+                       'type': 'scatter',
+                       'mode': 'lines',
+                       'x': graphs2[0]['x'],
+                       'y': graphs2[0]['y'],
+                       fill: 'tozeroy',
+                       'line': {
+                            'shape': 'spline',
+                            'smoothing': 0.15}
+                      }
+
+                    data=[smoothTrace]
+                    Plotly.newPlot('bargraph2',data, {});
+                </script>
+            </div>
+            <div class="chart" id = 'boxDiv' style="width:30%;float: right" >
+                <script>
+                    var y2 = {{box2 | safe}};
+                    var trace2 = {
+                      y: y2,
+                      type: 'box',
+                      color: 'orange',
+                      name: "{{session.graph_var_y2_pretty}}"+" (Fig 2)",
+                      boxmean: 'sd'
+                    };
+
+                    var data = [trace2];
+                    Plotly.newPlot('boxDiv', data);
+                </script>
+            </div>
+        </div>
+
+        {#      map      #}
+        <h4 style="margin: 25px">Visualización en mapa: <b>{{session.graph_var_y2_pretty}}</b></h4>
+
+        <div id="deck-container" style=" width: 71%; height: 60vh; margin: 40px;">
+
+        </div>
+        <script>
+        const jsonInput = {"initialViewState": {"bearing": -27.36, "latitude": 6.17184, "longitude": -75.56359, "maxZoom": 17, "minZoom": 3, "pitch": 40.5, "zoom": 13},
+          "layers": [
+              {#{"@@type": "ScatterplotLayer", "data":{{json_stations}}, "filled": true, "getFillColor": [255, 140, 0], "getLineColor": [0, 0, 0], "getPosition": "@@=[longitude, latitude]", "id": "2695882c-7d5e-4f89-9e8a-049b84822d70", "lineWidthMinPixels": 1, "opacity": 0.8, "pickable": true, "radiusMaxPixels": 8, "radiusMinPixels": 8, "radiusScale": 6, "stroked": true},#}
+              {"@@type": "LineLayer", "autoHighlight": true, "data": {{json_lines}}, "getSourcePosition": "@@=[longitude,latitude]", "getTargetPosition": "@@=[longitude2,latitude2]", "getWidth": 10, "highlightColor": [255, 255, 0], "id": "e7cf82d5-b4d6-4f9b-86ee-5f8712240607", "pickable": false, "pickingRadius": 10},
+              {"@@type": "ColumnLayer", "data":{{json_operation}},"elevationScale": 12, "getElevation": "@@=var", "getFillColor": "@@=[2, var * 2,  var * 5,  var* 50]", "getPosition": "@@=[longitude, latitude]", "id": "27bac356-e75f-4bab-b330-7c6e7c831819", "pickable": true, "radius": 20}
+              ],
+          "mapStyle": "mapbox://styles/mapbox/cjaudgl840gn32rnrepcb9b9g", "views": [{"@@type": "MapView", "controller": true}]};
+        const MAPBOX_API_KEY = 'pk.eyJ1Ijoic2FudGlhZ28xNzFjYyIsImEiOiJja2NjZTkzOTkwM3ZxMndxa296YTVseGNkIn0.EFcvvL83cLQZYsqSgLVa6A';
+        const tooltip = {
+            'html':'<b>Valor : </b>  <b>{name}</b>, Hora: <b>{timestamp}</b>',
+            'style': {'background': 'grey', 'color': 'white', 'font-family': '"Helvetica Neue", Arial', 'z-index': '10000'}
+        };
+        const customLibraries = null;
+
+        const deck = createDeck({
+          mapboxApiKey: MAPBOX_API_KEY,
+          container: document.getElementById('deck-container'),
+          jsonInput,
+          tooltip,
+          customLibraries
+        });
+        </script>
+
+        {#     violin plot       #}
+        <div class="chart" id = 'histDiv' style="width:100%;">
+            <script>
+                var y0 = {{box | safe}};
+                var trace1 = {
+                  y: y0,
+                  type: 'violin',
+                  box: {
+                    visible: true
+                  },
+                  line: {
+                    color: 'black'
+                  },
+                  fillcolor: 'blue',
+                  opacity: 0.6,
+                  meanline: {
+                    visible: true
+                  },
+                  name: "{{session.graph_var_y_pretty}}"+" (Fig 1)",
+                  boxmean: 'sd'
+                };
+
+
+                var y1 = {{box2 | safe}};
+                var trace2 = {
+                  y: y1,
+                  type: 'violin',
+                  box: {
+                    visible: true
+                  },
+                  line: {
+                    color: 'black'
+                  },
+                  fillcolor: 'orange',
+                  opacity: 0.6,
+                  meanline: {
+                    visible: true
+                  },
+                  name: "{{session.graph_var_y2_pretty}}"+" (Fig 2)",
+                  boxmean: 'sd'
+                };
+
+                var data = [trace1, trace2];
+                var layout = {
+                  title: "",
+                  yaxis: {
+                    zeroline: false
+                  }
+                }
+                Plotly.newPlot('histDiv', data, layout);
+            </script>
+        </div>
+
+    </div>
+
+
+
+    <script>
+        $(document).ready(function(){
+            function loadlink(){
+
+                req = $.ajax({
+                    url : "/updateplot",
+                    type : "GET",
+                });
+
+                req.done(function(res) {
+                    $("#bargraph").fadeOut(100).fadeIn(100);
+                    var graphs_react = JSON.parse(res);
+
+                    var trace_react = {
+                          x: graphs_react[0]['x'],
+                          y: graphs_react[0]['y'],
+                          type: 'scatter',
+                          'mode': 'line+markers',
+                        };
+
+                        data_react=[trace_react]
+
+                    Plotly.react('bargraph', data_react, {});
+                });
+            };
+            setInterval(function(){
+                loadlink() // this will run after every 60 seconds
+            }, 6000);
+        });
+    </script>
+</div>
+{% endblock %}

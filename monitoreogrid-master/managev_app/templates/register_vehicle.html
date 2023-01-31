@@ -1,0 +1,28 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+
+
+<div class="container" >
+    <form class="form-signin" action="" method="post">
+      <div class="text-center mb-4">
+        <img class="mb-4" src="/static/tracking-icon.png" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Registro vehicular</h1>
+      </div>
+        {{ form.hidden_tag() }}
+          <d1>
+            {{ wtf.form_field(form.placa, class='form-control', placeholder='Ingresa la placa de tu vehículo...') }}
+          </d1>
+          <d1>
+            {{ wtf.form_field(form.marca, class='form-control', placeholder='Ingresa la marca de tu vehículo...') }}
+         </d1>
+         <d1>
+            {{ wtf.form_field(form.year, class='form-control', placeholder='Ingresa el modelo de tu vehículo...') }}
+         </d1>
+
+         <button class="btn btn-lg btn-primary btn-block" type="submit">Registrar</button>
+      <p class="mt-5 mb-3 text-muted text-center">&copy;GRID 2021</p>
+  </form>
+  <img src="{{imagen}}" alt="CuerpoAcuoso">
+</div>
+{% endblock %}

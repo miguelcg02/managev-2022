@@ -1,0 +1,32 @@
+<<<<<<< HEAD
+.idea/
+__pycache__/
+venv/
+
+=======
+managev_app/DataBackup/monitoreogrid.sql
+managev_app/DataBackup/operation_FVQ731.csv
+nearest.py
+nearestneighbor.py
+monitoreogrid.pub
+
+venv/
+
+.idea/
+
+__pycache__/
+>>>>>>> master
+
+/managev_app/app.db
+/Nodeserver/libraries
+/Nodeserver/.vscode/
+/managev_app/db.sql
+/managev_app/operation.csv
+/managev_app/DataBackup/old_vehicle_operation.csv
+/managev_app/Research/ArcGis
+/managev_app/Research/OpenStreetMaps
+
+/Backup_monitoreo_data/
+/NodeServer/.pio
+
+temp-plot.html

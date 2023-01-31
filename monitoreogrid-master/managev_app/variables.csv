@@ -1,0 +1,83 @@
+id,var,var_pretty
+0,timestamp,Tiempo
+1,latitude,Latitud
+2,longitude,Longitud
+3,elevation,Altitud
+4,slope,Pendiente (°)
+5,accelerationX,Aceleración X
+6,accelerationY,Aceleración Y
+7,accelerationZ,Aceleración Z
+8,speed,Velocidad instantánea (Km/h)
+9,odometer,Odometro (Km)
+10,user_id,ID usuario
+11,batt_temp,Temperatura de batería (°C)
+12,ext_temp,Temperatura ambiente (°C)
+13,power_kw,Potencia eléctrica (Kw)
+14,acceleration,Aceleración motor (m/s^2)
+15,capacity,Capacidad de batería (kWh)
+16,vehicle_id,ID de vehículo
+17,soc,Estado de Carga (SoC)
+18,soh,Estado de Salud (SoH)
+19,voltage,Voltaje (V)
+20,current,Corriente (A)
+21,throttle,(%) De aceleración
+22,regen_brake,Freno regenerativo
+23,consumption,Consumo (kWh/km)
+24,range_est,Rango estimado (Km)
+25,range_ideal,Rango ideal (Km)
+26,drivetime,Tiempo de manejo
+27,charge_time,Tiempo de carga
+28,footbrake,(%) De freno
+29,engine_temp,Temperatura de motor
+30,is_charging,¿Está cargando?
+31,tpms,Presión de llantas
+32,ocv,OCV
+33,occupants,Ocupantes
+34,station_id,ID de estación
+35,capacity_nominal,Capacidad nominal (Ah)
+36,marca,Marca
+37,modelo,Modelo
+38,year,Año
+39,rul,Vida util restante
+40,rpm,RPM
+41,range_full,Rango con 100% SoC
+42,coulomb,Energía acomulada (Ah)
+43,energy,Energía acomulada (J)
+44,mean_acc, Acelereración promedio (m/s^2)
+45,mec_power, Potencia efectiva (server) (Kw)
+46,mec_power_delta_e, Potencia efectiva (OVMS) (Hp)
+47,run, Recorrido desde ultimo registro (m)
+48,net_force, Fuerza neta (N)
+49,friction_force, Fuerza de fricción (N)
+50,operative_state, Estado Operativo
+51,en_pot, Delta Energía potenical (J)
+52,mean_speed, Velocidad promedio (Km/h)
+53,freeram, free ram
+54,tasks,number of tasks
+55,net_signal,network quality
+56,elevation2,Altitud (Barometrica)(msnm)
+57,mean_acc_server,Aceleración promedio (server) (m/s^2)
+58,energy_rec, Energia recuperada (Kwh)
+59,charge_current,Corriente de carga (A)
+60,charge_time,Tiempo de Carga (s)
+61,charger_type,Tipo de cargador
+62,eff,Eficiencia (%)
+63,angle_x,Angulo X
+64,angle_y,Angulo Y
+65,q_loss,Perdida de Capacidad
+66,1 h, Última hora
+67,2 h, Últimas 2 horas
+68,4 h, Últimas 4 horas
+69,1 d, Hoy
+70,2 d, Últimos 2 días
+71,3 d, Últimos 3 días
+72,8 d, Ultima semana
+73,30 d, Ultimo mes
+74,60 d, Ultimos 60 días
+75,90 d, Ultimos 90 días
+76,365 d, Ultimo año
+77,AcX, Acelerómetro (X)
+78,AcY, Acelerómetro (Y)
+79,AcZ, Acelerómetro (Z)
+80,humidity, Humedad (%)
+81,assist_level, Nivel de asistencia

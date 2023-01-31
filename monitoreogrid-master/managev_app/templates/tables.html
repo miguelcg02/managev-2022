@@ -1,0 +1,351 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block body %}
+
+    <title>Tablas </title>
+    <div id="line_top_x"></div>
+        <ul class="nav nav-tabs">
+          {% if current_user.username in users_list %}
+            {% block content %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard.energy_monitor') }}">Gestión de energía</a>
+                </li>
+            {% endblock content %}
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_vehicle_map') }}" aria-selected="false">Mapa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_entries') }}" aria-selected="false" >Dashboard por vehículo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('dashboard.show_tables') }}" aria-selected="true">Tablas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_boat_routes') }}" aria-selected="false">Boat routes</a>
+          </li>
+
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+    {#  Function to draw vehicle calendar component  #}
+    <script src="../static/js/Components/vehicle_calendar_operation.js"></script>
+    <script>
+      google.charts.load("current", {packages:["calendar"]});
+      google.charts.setOnLoadCallback(drawChart);
+      let data_cal = {{ calendar | safe }};
+    </script>
+
+    {#  Function to draw user vehicles table component  #}
+    <script src="../static/js/Components/user_vehicles_table.js"></script>
+    <script>
+      google.charts.load('current', {'packages':['table']});
+      google.charts.setOnLoadCallback(drawTable);
+      const data_vehicles = {{ vehicles | safe }};
+    </script>
+
+    <div id="table_div" style="width: 96%; margin: 20px;"></div>
+
+    <div class="variables">
+        <form role="form" class="form-inline" id="Mainform" action="{{ url_for('dashboard.show_tables') }}" method=post>
+            <div id="calendar_basic" style="width: 100%; height: 50%;margin: 20px;"></div>
+{#            <div style="width: 100%;margin: 20px;"><b>Tip</b>: seleccione: <li><b>Pendiente, Velocidad instantánea, Aceleración promedio y Potencia eléctrica</b> para evaluar diferentes modelos de consumo</li></div>#}
+            <div class="col-auto">
+                <label class="label label-default" for="exampleFormControlSelect1"> Variable 1 </label>
+                <select class="form-control" id="exampleFormControlSelect1" name = var1>
+                    <option value="{{session.var1}}"> {{session.var1_pretty}}</option>
+                    <option value="elevation">Altitud (msnm)</option>
+                    <option value="slope">Pendiente (°)</option>
+                    <option value="speed">Velocidad instantánea (Km/h)</option>
+                    <option value="odometer">Odometro (Km)</option>
+                    <option value="capacity">Capacidad (kWh)</option>
+                    <option value="power_kw">Potencia eléctrica (Kw)</option>
+                    <option value="soc">SOC</option>
+                    <option value="charge_time">Tiempo de Carga (s) </option>
+                    <option value="batt_temp">Temperatura de batería (°C)</option>
+                    <option value="mean_acc">Aceleración promedio (m/s^2)</option>
+                    <option value="tpms">presion llantas (psi)</option>
+                    <option value="voltage">Voltage (V)</option>
+                    <option value="current">Corriente (A)</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="label label-default" for="exampleFormControlSelect2"> Variable 2 </label>
+                <select class="form-control" id="exampleFormControlSelect2" name = var2>
+                    <option value="{{session.var2}}"> {{session.var2_pretty}}</option>
+                    <option value="elevation">Altitud (msnm)</option>
+                    <option value="slope">Pendiente (°)</option>
+                    <option value="speed">Velocidad instantánea (Km/h)</option>
+                    <option value="odometer">Odometro (Km)</option>
+                    <option value="capacity">Capacidad (kWh)</option>
+                    <option value="power_kw">Potencia eléctrica (Kw)</option>
+                    <option value="soc">SOC</option>
+                    <option value="charge_time">Tiempo de Carga (s) </option>
+                    <option value="batt_temp">Temperatura de batería (°C)</option>
+                    <option value="mean_acc">Aceleración promedio (m/s^2)</option>
+                    <option value="tpms">presion llantas (psi)</option>
+                    <option value="voltage">Voltage (V)</option>
+                    <option value="current">Corriente (A)</option>
+
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="label label-default" for="exampleFormControlSelect3"> Variable 3 </label>
+                <select class="form-control" id="exampleFormControlSelect3" name = var3>
+                    <option value="{{session.var3}}"> {{session.var3_pretty}}</option>
+                    <option value="elevation">Altitud (msnm)</option>
+                    <option value="slope">Pendiente (°)</option>
+                    <option value="speed">Velocidad instantánea (Km/h)</option>
+                    <option value="odometer">Odometro (Km)</option>
+                    <option value="capacity">Capacidad (kWh)</option>
+                    <option value="power_kw">Potencia eléctrica (Kw)</option>
+                    <option value="soc">SOC</option>
+                    <option value="charge_time">Tiempo de Carga (s) </option>
+                    <option value="batt_temp">Temperatura de batería (°C)</option>
+                    <option value="mean_acc">Aceleración promedio (m/s^2)</option>
+                    <option value="tpms">presion llantas (psi)</option>
+                    <option value="voltage">Voltage (V)</option>
+                    <option value="current">Corriente (A)</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="label label-default" for="exampleFormControlSelect4"> Variable 4 </label>
+                <select class="form-control" id="exampleFormControlSelect4" name = var4>
+                    <option value="{{session.var4}}"> {{session.var4_pretty}}</option>
+                    <option value="elevation">Altitud (msnm)</option>
+                    <option value="slope">Pendiente (°)</option>
+                    <option value="speed">Velocidad instantánea (Km/h)</option>
+                    <option value="odometer">Odometro (Km)</option>
+                    <option value="capacity">Capacidad (kWh)</option>
+                    <option value="power_kw">Potencia eléctrica (Kw)</option>
+                    <option value="soc">SOC</option>
+                    <option value="charge_time">Tiempo de Carga (s) </option>
+                    <option value="batt_temp">Temperatura de batería (°C)</option>
+                    <option value="mean_acc">Aceleración promedio (m/s^2)</option>
+                    <option value="tpms">presion llantas (psi)</option>
+                    <option value="voltage">Voltage (V)</option>
+                    <option value="current">Corriente (A)</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="label label-default" for="exampleFormControlSelect5"> Variable 5 </label>
+                <select class="form-control" id="exampleFormControlSelect5" name = var5>
+                    <option value="{{session.var5}}"> {{session.var5_pretty}}</option>
+                    <option value="elevation">Altitud (msnm)</option>
+                    <option value="slope">Pendiente (°)</option>
+                    <option value="speed">Velocidad instantánea (Km/h)</option>
+                    <option value="odometer">Odometro (Km)</option>
+                    <option value="capacity">Capacidad (kWh)</option>
+                    <option value="power_kw">Potencia eléctrica (Kw)</option>
+                    <option value="soc">SOC</option>
+                    <option value="charge_time">Tiempo de Carga (s) </option>
+                    <option value="batt_temp">Temperatura de batería (°C)</option>
+                    <option value="mean_acc">Aceleración promedio (m/s^2)</option>
+                    <option value="tpms">presion llantas (psi)</option>
+                    <option value="voltage">Voltage (V)</option>
+                    <option value="current">Corriente (A)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="label label-default" for="records_input">Número de registros</label>
+                <input type="number" class="form-control" id="records_input" name="records"  placeholder="# registros">
+            </div>
+            <script>
+                document.getElementById('records_input').defaultValue = '{{ session.records }}';
+            </script>
+
+            <div class='col-sm-2'>
+                <label class="label label-default" for="date"> Fecha </label>
+                <div class="form-group" id = 'date'>
+                    <div class='input-group date' id='datetimepicker1'>
+                        <input type='text' id = 'd1_input' class="form-control" name = 'd1' />
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                document.getElementById('d1_input').defaultValue = '{{ session.form_d1 }}'
+                $(function() {
+                   $('#datetimepicker1').datetimepicker({
+                         format: 'DD/MM/YYYY'
+                   });
+                });
+            </script>
+
+            <div class='col-sm-2'>
+                <label class="label label-default" for="hora1"> Desde </label>
+                <div class="form-group" id="hora1">
+                    <div class='input-group date' id='datetimepicker3'>
+                        <input type='text' id = 'h1_input' class="form-control" name = 'h1'/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+
+                document.getElementById('h1_input').defaultValue = '{{ session.form_h1 }}'
+                $(function () {
+                    $('#datetimepicker3').datetimepicker({
+                        format: 'LT'
+                    });
+                });
+            </script>
+
+            <div class='col-sm-2'>
+                <label class="label label-default" for="hora2"> Hasta </label>
+                <div class="form-group" id="hora2">
+                    <div class='input-group date' id='datetimepicker4'>
+                        <input type='text' id = 'h2_input' class="form-control" name = 'h2'/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.getElementById('h2_input').defaultValue = '{{ session.form_h2 }}';
+                $(function () {
+                    $('#datetimepicker4').datetimepicker({
+                        format: 'LT'
+                    });
+                });
+            </script>
+            <div class="col-auto">
+                <button class="btn btn-dark" type="submit">Ver</button>
+            </div>
+
+            </form>
+        </div>
+
+ <div style="width: 100%">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <div id = "bargraph" style="width:50%;float: left">
+        <script>
+            var graphs = {{plot | safe}};
+
+            scatter_trace = {
+               'type': 'scatter',
+               'mode': 'markers',
+               'name': 'Jimenez vs potencia e',
+               'x': graphs[0]['x'],
+               'y': graphs[0]['y'],
+               //fill: 'tozeroy',
+               //'line': {'shape': 'spline', 'smoothing': 0.45}
+           }
+
+
+            var layout = {
+              title: {
+                text:'Jimenez estimation vs potencia eléctrica',
+                font: {
+                  family: 'Courier New, monospace',
+                  size: 23
+                },
+                xref: 'paper',
+                x: 0.05,
+              },
+              xaxis: {
+                title: {
+                  text: 'Jimenez estimation',
+                  font: {
+                    family: 'Courier New, monospace',
+                    size: 18,
+                    color: '#7f7f7f'
+                  }
+                },
+              },
+              yaxis: {
+                title: {
+                  text: 'Potencia eléctrica',
+                  font: {
+                    family: 'Courier New, monospace',
+                    size: 18,
+                    color: '#7f7f7f'
+                  }
+                }
+              }
+            };
+
+            data1=[scatter_trace]
+            Plotly.newPlot('bargraph',data1, layout);
+        </script>
+    </div>
+    <div id = "bargraph2" style="width:50%;float: right">
+        <script>
+            var integral_j = {{plotint1 | safe}};
+            var integral_p = {{plotint2 | safe}};
+            var integral_f = {{plotint3 | safe}};
+
+            smoothTrace1 = {
+               'type': 'scatter',
+               'name': 'Consumo estimado (Jimenez)(kWh)',
+               'mode': 'lines',
+               'x': integral_j[0]['x'],
+               'y': integral_j[0]['y'],
+               fill: 'tozeroy',
+               'line': {'shape': 'spline', 'smoothing': 0.2}
+           }
+
+           smoothTrace2 = {
+               'type': 'scatter',
+               'name': 'Consumo real (kWh)',
+               'mode': 'lines',
+               'x': integral_p[0]['x'],
+               'y': integral_p[0]['y'],
+               fill: 'tozeroy',
+               'line': {'shape': 'spline', 'smoothing': 0.2}
+           }
+
+           smoothTrace3 = {
+               'type': 'scatter',
+               'name': 'Consumo estimado (Fiori)(kWh)',
+               'mode': 'lines',
+               'x': integral_f[0]['x'],
+               'y': integral_f[0]['y'],
+               fill: 'tozeroy',
+               'line': {'shape': 'spline', 'smoothing': 0.2}
+           }
+
+            var layout = {
+              title: {
+                text:'Performance de modelos de consumo',
+                font: {
+                  family: 'Courier New, monospace',
+                  size: 23
+                },
+                xref: 'paper',
+                x: 0.05,
+              }
+             }
+
+            data_integrals = [smoothTrace1, smoothTrace2, smoothTrace3]
+            Plotly.newPlot('bargraph2', data_integrals, layout);
+        </script>
+    </div>
+</div>
+
+<a href="{{ url_for('dashboard.download_csv', username=current_user.username) }}"
+   style="margin: 10px; background-color: #80bdff; color: white;"
+   class="btn"><i class="fa fa-download"></i> Download .csv
+</a>
+
+<table class="table">
+
+    <tbody>
+        {% for table in tables %}
+        <tr>
+            <td>{{ table|safe }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+            {{ table|safe }}
+</table>
+{% endblock %}
+
+

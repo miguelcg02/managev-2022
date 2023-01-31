@@ -1,0 +1,247 @@
+{% extends "layout.html" %}
+{% block body  %}
+<div>
+    <head>
+      <link rel="stylesheet" type="text/css" href="/static/style.css" />
+        <title>Energy monitor</title>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+        <script
+                src="https://maps.googleapis.com/maps/api/js?key={{google_sdk_key}}&callback=initMap&libraries=drawing&v=weekly"
+                defer
+        ></script>
+        <script>
+            let flightPath;
+            let map;
+            function initMap() {
+              const myLatlng = { lat: 6.2, lng: -75.5 };
+              const map = new google.maps.Map(document.getElementById("map_google"), {
+                zoom: 13,
+                center: myLatlng,
+              });
+              var flightPlanCoordinates = JSON.parse('{{coords | tojson}}');
+
+              const flightPath = new google.maps.Polyline({
+                path: flightPlanCoordinates,
+                geodesic: true,
+                strokeColor: "#ff0000",
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+              });
+
+              // Functions to draw the line
+              flightPath.setMap(map);
+
+              // Create the initial InfoWindow.
+
+              let infoWindow = new google.maps.InfoWindow({
+                content: "Click the map to get Lat/Lng!",
+                position: myLatlng,
+              });
+              infoWindow.open(map);
+
+              // Configure the click listener.
+              map.addListener("click", (mapsMouseEvent) => {
+                // Close the current InfoWindow.
+                infoWindow.close();
+                // Create a new InfoWindow.
+                infoWindow = new google.maps.InfoWindow({
+                  position: mapsMouseEvent.latLng,
+                });
+                infoWindow.setContent(
+                  String(mapsMouseEvent.latLng)
+                );
+                if (document.getElementById('pos_origin').value == 'Click on the map'){
+
+                    document.getElementById('pos_origin').value = mapsMouseEvent.latLng;
+                }
+                else {
+                    document.getElementById('pos_dest').value = mapsMouseEvent.latLng;
+                }
+                console.log(infoWindow.getContent())
+
+                infoWindow.open(map);
+
+              });
+
+            }
+            function addLine() {
+              flightPath.setMap(map);
+            }
+
+            function removeLine() {
+              flightPath.setMap(null);
+            }
+        </script>
+    </head>
+
+    <title>Panel de gestión energética</title>
+    <div id="line_top_x"></div>
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('dashboard.energy_monitor') }}">Panel de energía</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_vehicle_map') }}" aria-selected="false">Mapa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_entries') }}" aria-selected="true" >Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_tables') }}" aria-selected="false">Tablas</a>
+          </li>
+
+        </ul>
+     </div>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<div style="width:80%;height:70%" id="map_google"></div>
+
+<form role="form" class="form-group form-inline" action="{{ url_for('dashboard.energy_monitor') }}" method=post>
+
+    <label for="pos_origin" style="display: inline-block; margin: 20px;">Posición inicial:</label>
+    <input type="text" id="pos_origin" name="pos_o" style="display: inline-block; margin: 20px;">
+    <label for="pos_dest" style="display: inline-block; margin: 20px;">Posición final:</label>
+    <input type="text" id="pos_dest" name="pos_d" style="display: inline-block; margin: 20px;">
+    <input type="reset" value="Reset">
+    <button class="btn btn-primary" type="submit" style="margin: 20px;" >Calcular consumo</button>
+    {% if session.ANN != 0%}
+        <h4 style="width:100%;margin:20px"> Consumo esperado del trayecto (ANN): <b>{{session.ANN}} kWh</b></h4>
+        <h4 style="width:100%;margin:20px"> Consumo esperado del trayecto (RF): <b>{{session.RF}} kWh</b></h4>
+        <h4 style="width:100%;margin:20px"> Consumo esperado del trayecto (XGB): <b>{{session.XGB}} kWh</b></h4>
+        <h4 style="width:100%;margin:20px"> Consumo esperado del trayecto (linear): <b>{{session.linear}} kWh</b></h4>
+        <h4 style="width:100%;margin:20px"> Consumo esperado del trayecto (Wang): <b>{{session.wang}} kWh</b></h4>
+    {% endif %}
+    {% if session.est_time != 0%}
+        <h4 style="width:100%;margin:20px"> Tiempo de viaje: <b>{{session.est_time}} min</b></h4>
+    {% endif %}
+    {% if session.lights != 0%}
+        <h4 style="width:100%;margin:20px"> Cantidad de semáforos: <b>{{session.lights}}</b></h4>
+    {% endif %}
+<div style="width: 100%; margin: 30px"></div>
+    <div class="box header">
+        <h3>&nbsp Ver energía consumida y recuperada de &nbsp</h3>
+        <select class="form-control" id="time_interval_select" name = time_interval onchange="this.form.submit();">
+            <option value="{{session.time_interval}}"> {{session.t_int_pretty}}</option>
+            <option value="1 h">Última hora</option>
+            <option value="2 h">Últimas 2 horas</option>
+            <option value="4 h">Últimas 4 horas</option>
+            <option value="1 d">Últimas 24 horas</option>
+            <option value="2 d">Últimos 2 días</option>
+            <option value="3 d">Últimos 3 días</option>
+            <option value="8 d">Ultima semana</option>
+            <option value="30 d">Ultimo mes</option>
+            <option value="60 d">Ultimos 60 días</option>
+            <option value="90 d">Ultimos 90 días</option>
+            <option value="365 d">Ultimo año</option>
+        </select>
+    </div>
+</form>
+
+
+
+
+<div>
+    <script type="text/javascript">
+        document.getElementById('pos_origin').defaultValue = 'Click on the map'
+        document.getElementById('pos_dest').defaultValue = 'Click on the map'
+    </script>
+    </div>
+</div>
+
+
+
+    <div style="width: 100%">
+        <div id = "bargraph" style="width:70%;float: left">
+            <script>
+                var graphs = {{plot | safe}};
+                //color_line = {{color | safe}}
+                console.log(graphs);
+
+                smoothTrace = {
+                   'type': 'scatter',
+                   'name': 'Consumo',
+                   'mode': 'lines',
+                   'x': graphs['data'][0]['x'],
+                   'y': graphs['data'][0]['y'],
+                   fill: 'tozeroy',
+                   fillcolor: '#9999ff',
+
+                   'line': {
+                        'color': '#3333ff',
+                        'shape': 'spline',
+                        'smoothing': 0}
+                  };
+
+                  smoothTrace_regen = {
+                   'type': 'scatter',
+                   'name': 'Regeneración',
+                   'mode': 'lines',
+                   'x': graphs['data'][1]['x'],
+                   'y': graphs['data'][1]['y'],
+                   fill: 'tozeroy',
+                   fillcolor: '#99ff99',
+                   'line': {
+                        'color': '#33ff33',
+                        'shape': 'spline',
+                        'smoothing': 0}
+                  };
+
+                var layout = {
+                  title: {
+                    text:'Energía consumida y recuperada',
+                    font: {
+                      family: 'Bansc, monospace',
+                      size: 24
+                    },
+                    xref: 'paper',
+                    x: 0.05,
+                  },
+
+                  yaxis: {
+                    title: {
+                      text: 'kW',
+                      font: {
+                        family: 'Courier New, monospace',
+                        size: 18,
+                        color: '#7f7f7f'
+                      }
+                    }
+                  }
+                };
+
+                data=[smoothTrace,smoothTrace_regen]
+                Plotly.newPlot('bargraph',data, layout);
+            </script>
+        </div>
+        <div id="PieDiv" style="width:30%;float: right">
+         <script>
+          var donut_data = {{donut | safe}};
+          console.log(donut_data[0]);
+
+          var data = [{
+          type: "pie",
+          values: donut_data[0]['values'],
+          labels: ['Consumo', 'Regeneración'],
+          marker: {
+            colors:  ['#9999ff', '#99ff99']
+          },
+
+          textinfo: "label+percent",
+          textposition: "outside",
+          automargin: true
+        }]
+
+        var layout = {
+          title: 'Balance energético (Wh)',
+          height: 400,
+          width: 400,
+          }
+
+        Plotly.newPlot('PieDiv', data, layout)
+        </script>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

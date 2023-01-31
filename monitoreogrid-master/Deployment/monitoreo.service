@@ -1,0 +1,17 @@
+[Unit]
+Description=Gunicorn instance to serve monitoreo
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/root/monitoreogrid
+Environment="PATH=/root/monitoreogrid/venv/bin"
+Environment="DATABASE_URL=mysql+pymysql://admin:5Actu_adores.@localhost:3306/monitoreodb"
+ExecStart=/root/monitoreogrid/venv/bin/gunicorn -b localhost:8080 app:app
+
+[Install]
+WantedBy=multi-user.target
+
+
+

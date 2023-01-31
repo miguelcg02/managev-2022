@@ -1,0 +1,93 @@
+html, body{
+    margin:0;
+    padding:0;
+    width: 100%; /* this is the important part*/
+}
+
+.variables {width: 100%; float: left; margin: 10px}
+
+.form-signin {width: 40%}
+
+body {
+  margin: 40px;
+}
+
+.sidebar {
+        grid-area: sidebar;
+    }
+
+    .sidebar2 {
+        grid-area: sidebar2;
+    }
+
+    .content {
+        grid-area: content;
+    }
+
+    .header {
+        grid-area: header;
+    }
+
+    .footer {
+        grid-area: footer;
+    }
+
+    .wrapper {
+        width:100%;
+        background-color: #fff;
+        color: #444;
+    }
+
+  .wrapper {
+    display: grid;
+    grid-gap: 1em;
+    grid-template-areas:
+     "header"
+     "sidebar"
+     "content"
+     "sidebar2"
+     "footer"
+  }
+
+
+    .wrapper {
+
+        grid-template-columns: 20% auto;
+        grid-template-areas:
+    "header   header"
+        "sidebar  content"
+        "sidebar2 sidebar2"
+        "footer   footer";
+    }
+
+
+        .wrapper {
+      grid-gap: 20px;
+            grid-template-columns: 120px auto 120px;
+            grid-template-areas:
+      "header  header  header"
+            "sidebar content sidebar2"
+            "footer  footer  footer";
+            max-width: 600px;
+        }
+
+.box {
+  background-color: #444;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 150%;
+}
+
+.header,
+.footer {
+  background-color: #999;
+}
+
+.sidebar2 {
+  background-color: #ccc;
+  color: #444;
+}
+
+
+

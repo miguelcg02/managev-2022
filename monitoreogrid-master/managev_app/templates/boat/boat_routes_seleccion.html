@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+
+    <title>Boat routes</title>
+
+    <div id="line_top_x"></div>
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_vehicle_map') }}" aria-selected="false">Mapa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_entries') }}" aria-selected="false" >Dashboard por vehículo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard.show_tables') }}" aria-selected="false">Tablas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('dashboard.show_boat_routes') }}" aria-selected="true">Boat routes</a>
+          </li>
+        </ul>
+    </div>
+
+    <div class="container-fluid pt-3">
+        <h2>Rutas</h2>
+        <div>
+            <a class="btn btn-primary" href="{{ url_for('dashboard.ruta2puntos',coords=coords) }}">Ruta entre 2 puntos</a>
+            <a class="btn btn-primary" href="{{ url_for('dashboard.rutaDistancia',coords=coords) }}">Distancia</a>
+            <a class="btn btn-primary" href="{{ url_for('dashboard.show_boat_routes') }}">Volver</a>
+        </div>
+        <br>
+        <img src="{{imagen}}" alt="CuerpoAcuoso">
+    </div>
+
+
+{% endblock %}
